@@ -128,7 +128,6 @@ class Query(object):
                 self.single_cycle( wait_time=choice(wait), verbose=verbose)
                 volte += 1
             except KeyboardInterrupt:
-                self.tor_process.terminate()
                 sys.stdout.flush()
                 if verbose:
                     sys.stdout.write("Queries made: %s\n" % volte)
