@@ -22,13 +22,27 @@ class Query(object):
     """
         This class handle the query.
     """
-    def __init__(self, url, verbose=True, request_data={}, method="GET", socketPort=9050, tor_cmd="/usr/bin/tor"):
+    def __init__(self, url, verbose=True, request_data={}, method="GET", socketPort=None, tor_cmd="/usr/bin/tor"):
         if not method in ["GET","POST","PUT","DELETE"]: 
             raise Exception("The method could be GET, POST, PUT or DELETE")
         
         self.url = url
         self.method = method
         self.request_data = request_data
+
+        if not socketPort:
+            for port in range(9050,9100):
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                result = sock.connect_ex(("127.0.0.1", port))
+                if result == 0:
+                    socketPort = port
+                sock.close()
+            if not socketPort:
+                socketPort = 9050
+
+        if verbose:
+            sys.stdout.write("using port: %s\n" % socketPort)
+            sys.stdout.flush()
 
         # Saving the old socket
         self.__old_socket = socket.socket
