@@ -13,6 +13,7 @@ import stem
 import stem.process
 
 from random import choice
+from random import shuffle
 
 def print_bootstrap_lines(line):
     if "Bootstrapped " in line:
@@ -31,18 +32,10 @@ class Query(object):
         self.request_data = request_data
 
         if not socketPort:
-            for port in range(9050,9100):
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                result = sock.connect_ex(("127.0.0.1", port))
-                if result == 0:
-                    socketPort = port
-                sock.close()
-            if not socketPort:
-                socketPort = 9050
-
-        if verbose:
-            sys.stdout.write("using port: %s\n" % socketPort)
-            sys.stdout.flush()
+            socketPort = self.__select_random_port()
+            if verbose:
+                sys.stdout.write("Using TOR port: %s\n" % socketPort)
+                sys.stdout.flush()
 
         # Saving the old socket
         self.__old_socket = socket.socket
@@ -73,6 +66,32 @@ class Query(object):
                 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.0.12) Gecko/20070731 Ubuntu/dapper-security Firefox/1.5.0.12',
                 'Lynx/2.8.5rel.1 libwww-FM/2.14 SSL-MM/1.4.1 GNUTLS/1.2.9'
             ]
+
+    def __is_port_available(self, port_number):
+        """
+            Check if the port is available.
+        """
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex(("127.0.0.1", port_number))
+        sock.close()
+        if result != 0:
+            return True
+        return False
+
+    def __select_random_port(self):
+        """
+            Check a port available for TOR process.
+            This allow the user to run more TOR process at the same time.
+        """
+        #Using Randomness:
+        ports_available = range(9060,9100)
+        shuffle(ports_available)
+
+        for port in ports_available:
+            first_available = self.__is_port_available(port)
+            second_available = self.__is_port_available(port+1)
+            if first_available and second_available:
+                return port
 
     def perform(self):
         """
