@@ -96,12 +96,14 @@ url_to_nuke = find_url_to_query(the_url, the_method)
 query = Query( url_to_nuke, tor_cmd="/Applications/TorBrowser_en-US.app/Contents/MacOS/tor")
 query.is_query_working = check_vote_done
 
+times = 0
 while 1:
     try:
         sys.stdout.write("Querying %s : " % query.url)
         sys.stdout.flush()
         try:
             query.single_cycle(verbose=False)
+            times += 1
         except KeyboardInterrupt:
             query.tor_process.terminate()
             os.kill(os.getpid(), 1)
@@ -112,5 +114,8 @@ while 1:
         sys.stdout.flush()
     except KeyboardInterrupt:
         query.tor_process.terminate()
+        sys.stdout.flush()
+        sys.stdout.write("%s votes done\n" % times)
+        sys.stdout.flush()
         os.kill(os.getpid(), 1)
         break
