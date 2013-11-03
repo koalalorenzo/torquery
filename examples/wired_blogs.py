@@ -13,7 +13,7 @@ import sys, os
 ### Checking Args
 
 if len(sys.argv) < 3 or sys.argv[1] in ["-h", "--help", "help", "h"]:
-    sys.stdout.write("Use this method to vote on wired blogs:\n")
+    sys.stdout.write("Use a valid command to vote on wired blogs:\n")
     sys.stdout.write("   wired_blogs.py METHOD URL\n")
     sys.stdout.flush()
     sys.exit(1)
