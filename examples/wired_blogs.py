@@ -106,6 +106,9 @@ while 1:
             times += 1
         except KeyboardInterrupt:
             query.tor_process.terminate()
+            sys.stdout.flush()
+            sys.stdout.write("%s votes done\n" % times)
+            sys.stdout.flush()
             os.kill(os.getpid(), 1)
             break
         except: 
