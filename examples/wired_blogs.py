@@ -10,11 +10,29 @@ from torquery import Query
 from random import choice
 import sys, os
 
+### Checking Args
+
+if len(sys.argv) < 3 or sys.argv[1] in ["-h", "--help", "help", "h"]:
+    sys.stdout.write("Use this method to vote on wired blogs:\n")
+    sys.stdout.write("   wired_blogs.py METHOD URL\n")
+    sys.stdout.flush()
+    sys.exit(1)
+
+if sys.argv[1] not in ["wired","tired","expired"]:
+    sys.stdout.write("Use wired, tired or exipred as method:\n")
+    sys.stdout.write("   wired_blogs.py METHOD URL\n")
+    sys.stdout.flush()
+    sys.exit(1)
+
+if len(sys.argv[2]) < 5:
+    sys.stdout.write("Use a completed and valid URL. (ex: http://domains.ext/path )")
+    sys.stdout.write("   wired_blogs.py METHOD URL\n")
+    sys.stdout.flush()
+    sys.exit(1)
 
 ### Config
-some_posts = [
-    "http://daily.wired.it/news/internet/2013/10/07/signori-twitter-classifica-campioni-vip-564573.html",
-]
+the_method = sys.argv[1]
+the_url = sys.argv[2]
 
 ### Everyghing else
 output_checking = {"wired":0, "tired": 0, "expired": 0} # Global dictionary
@@ -46,7 +64,7 @@ def check_vote_done(self, output):
     sys.stdout.write("done\n")
     return True
 
-def find_url_to_query(url):
+def find_url_to_query(url, method="tired"):
     """
         Extract the correct URL to vote Wired post.
     """
@@ -60,34 +78,39 @@ def find_url_to_query(url):
     # urls[0] -> Wired
     # urls[1] -> Tired
     # urls[-1] or urls[2] -> Expired
-    # print urls
-    path = choice(urls)
+
+    if method == "wired":
+        path = urls[0]
+    elif method == "tired":
+        path = urls[1]
+    elif method == "expired":
+        path = urls[2]
+    else:
+        path = choice(urls)
+
     #path = urls[-1]
     return "%s%s" % (domain,path)
 
 
-urls = list()
-for posts_url in some_posts:
-    urls.append(find_url_to_query(posts_url))
-
-q = Query(choice(urls), tor_cmd="/Applications/TorBrowser_en-US.app/Contents/MacOS/tor")
-q.is_query_working = check_vote_done
+url_to_nuke = find_url_to_query(the_url, the_method)
+query = Query( url_to_nuke, tor_cmd="/Applications/TorBrowser_en-US.app/Contents/MacOS/tor")
+query.is_query_working = check_vote_done
 
 while 1:
     try:
-        q.url = choice(urls)
-        sys.stdout.write("Querying %s : " % q.url)
+        query.url = choice(urls)
+        sys.stdout.write("Querying %s : " % query.url)
         sys.stdout.flush()
         try:
-            q.single_cycle(verbose=False)
+            query.single_cycle(verbose=False)
         except KeyboardInterrupt:
-            q.tor_process.terminate()
+            query.tor_process.terminate()
             os.kill(os.getpid(), 1)
             break
         except: 
             sys.stdout.write("Error\n")
         sys.stdout.flush()
     except KeyboardInterrupt:
-        q.tor_process.terminate()
+        query.tor_process.terminate()
         os.kill(os.getpid(), 1)
         break
