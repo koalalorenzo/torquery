@@ -98,7 +98,6 @@ query.is_query_working = check_vote_done
 
 while 1:
     try:
-        query.url = choice(urls)
         sys.stdout.write("Querying %s : " % query.url)
         sys.stdout.flush()
         try:
