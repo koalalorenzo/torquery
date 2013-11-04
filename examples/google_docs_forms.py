@@ -40,13 +40,7 @@ data = {
 }
 
 # Using POST method and Mac OS TorBrowser Bundle.
-q = Query( 
-            url, 
-            request_data=post_data, 
-            method="POST", 
-            # MacOS Tor is located in /Applications directory
-            tor_cmd="/Applications/TorBrowser_en-US.app/Contents/MacOS/tor"
-            )
+q = Query( url, request_data=post_data, method="POST")
 
 # Once the tor local process is running, use this function to check 
 q.is_query_working = check_form_sent

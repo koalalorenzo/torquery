@@ -93,7 +93,7 @@ def find_url_to_query(url, method="tired"):
 
 
 url_to_nuke = find_url_to_query(the_url, the_method)
-query = Query( url_to_nuke, tor_cmd="/Applications/TorBrowser_en-US.app/Contents/MacOS/tor")
+query = Query( url_to_nuke )
 query.is_query_working = check_vote_done
 
 times = 0

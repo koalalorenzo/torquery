@@ -15,6 +15,8 @@ import stem.process
 from random import choice
 from random import shuffle
 
+import platform
+
 def print_bootstrap_lines(line):
     if "Bootstrapped " in line:
         sys.stdout.write("%s\n" % line)
@@ -23,7 +25,7 @@ class Query(object):
     """
         This class handle the query.
     """
-    def __init__(self, url, verbose=True, request_data={}, method="GET", socketPort=None, tor_cmd="/usr/bin/tor"):
+    def __init__(self, url, verbose=True, request_data={}, method="GET", socketPort=None, tor_cmd=None):
         if not method in ["GET","POST","PUT","DELETE"]: 
             raise Exception("The method could be GET, POST, PUT or DELETE")
         
@@ -36,6 +38,9 @@ class Query(object):
             if verbose:
                 sys.stdout.write("Using TOR port: %s\n" % socketPort)
                 sys.stdout.flush()
+
+        if not tor_cmd:
+            tor_cmd = self.__find_right_tor_bin_path()
 
         # Saving the old socket
         self.__old_socket = socket.socket
@@ -92,6 +97,23 @@ class Query(object):
             second_available = self.__is_port_available(port+1)
             if first_available and second_available:
                 return port
+
+    def __find_right_tor_bin_path(self):
+        """
+            This method will check the right tor binary path for stem.
+        """
+        current_platform = platform.platform()
+        if "Darwin" in current_platform:
+            ideal_path = "/Applications/TorBrowser_en-US.app/Contents/MacOS/tor"
+            if os.path.isfile(ideal_path):
+                return ideal_path
+        elif "Windows" in current_platform:
+             raise Exception('Unable to run the script on Windows')
+        else:
+            # Including Linux 
+            ideal_path = "/usr/bin/tor"
+            if os.path.isfile(ideal_path):
+                return ideal_path
 
     def perform(self):
         """
