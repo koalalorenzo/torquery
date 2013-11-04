@@ -114,6 +114,8 @@ while 1:
         except: 
             query.tor_process.terminate()
             sys.stdout.write("Error\n")
+            os.kill(os.getpid(), 1)
+            break
         sys.stdout.flush()
     except KeyboardInterrupt:
         query.tor_process.terminate()
