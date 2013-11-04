@@ -10,7 +10,7 @@ except ImportError:
 long_description = """Python module helps to perform a lot of HTTP queries using the onion router."""
 
 setup(name='torquery',
-      version='0.3',
+      version='0.3.1',
       description='TOR HTTP queries handler',
       author='Lorenzo Setale ( http://who.is.lorenzo.setale.me/? )',
       author_email='koalalorenzo@gmail.com',
